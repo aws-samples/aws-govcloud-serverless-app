@@ -1,0 +1,5 @@
+{
+    "userPoolId": "<REPLACE WITH COGNITO USER POOL ID>",
+    "clientId" : "<REPLACE WITH APPLICATION CLIENT ID>",
+    "apiUrl": "REPLACE WITH API URL"
+}

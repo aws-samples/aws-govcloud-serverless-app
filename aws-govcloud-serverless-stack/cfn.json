@@ -1,0 +1,1129 @@
+{
+  "Resources": {
+    "items07D08F4B": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "KeySchema": [
+          {
+            "AttributeName": "ID",
+            "KeyType": "HASH"
+          }
+        ],
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "ID",
+            "AttributeType": "S"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "TableName": "HelloWorldDatabase"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "AwsGovcloudServerlessAppStack/items/Resource"
+      }
+    },
+    "CodeBucketFF4C7AD6": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        },
+        "BucketName": {
+          "Ref": "CodeBucketName"
+        },
+        "Tags": [
+          {
+            "Key": "aws-cdk:cr-owned:df52e50f",
+            "Value": "true"
+          }
+        ],
+        "WebsiteConfiguration": {
+          "IndexDocument": "index.html"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "AwsGovcloudServerlessAppStack/CodeBucket/Resource"
+      }
+    },
+    "CodeBucketPolicy637E7C14": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "CodeBucketFF4C7AD6"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "CodeBucketFF4C7AD6",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "CodeBucketFF4C7AD6",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "AwsGovcloudServerlessAppStack/CodeBucket/Policy/Resource"
+      }
+    },
+    "DeployCodeAwsCliLayerB38BC350": {
+      "Type": "AWS::Lambda::LayerVersion",
+      "Properties": {
+        "Content": {
+          "S3Bucket": "cdk-hnb659fds-assets-897821772212-us-gov-west-1",
+          "S3Key": "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip"
+        },
+        "Description": "/opt/awscli/aws"
+      },
+      "Metadata": {
+        "aws:cdk:path": "AwsGovcloudServerlessAppStack/DeployCode/AwsCliLayer/Resource",
+        "aws:asset:path": "asset.c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip",
+        "aws:asset:is-bundled": false,
+        "aws:asset:property": "Content"
+      }
+    },
+    "DeployCodeCustomResource46A14DA0": {
+      "Type": "Custom::CDKBucketDeployment",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
+            "Arn"
+          ]
+        },
+        "SourceBucketNames": [
+          "cdk-hnb659fds-assets-897821772212-us-gov-west-1"
+        ],
+        "SourceObjectKeys": [
+          "00cfa123db0c9946ddd7c66b1fd14ef11f1d5c77afb25c4924d92deed380bdf6.zip"
+        ],
+        "DestinationBucketName": {
+          "Ref": "CodeBucketFF4C7AD6"
+        },
+        "Prune": true
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "AwsGovcloudServerlessAppStack/DeployCode/CustomResource/Default"
+      }
+    },
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "AwsGovcloudServerlessAppStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource"
+      }
+    },
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws-us-gov:s3:::cdk-hnb659fds-assets-897821772212-us-gov-west-1",
+                "arn:aws-us-gov:s3:::cdk-hnb659fds-assets-897821772212-us-gov-west-1/*"
+              ]
+            },
+            {
+              "Action": [
+                "s3:Abort*",
+                "s3:DeleteObject*",
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*",
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "CodeBucketFF4C7AD6",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "WebsiteBucket75C24D94",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "CodeBucketFF4C7AD6",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "WebsiteBucket75C24D94",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
+        "Roles": [
+          {
+            "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "AwsGovcloudServerlessAppStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource"
+      }
+    },
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-897821772212-us-gov-west-1",
+          "S3Key": "6ddcf10002539818a9256eff3fb2b22aa09298d8f946e26ba121c175a600c44e.zip"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
+            "Arn"
+          ]
+        },
+        "Handler": "index.handler",
+        "Layers": [
+          {
+            "Ref": "DeployCodeAwsCliLayerB38BC350"
+          }
+        ],
+        "Runtime": "python3.9",
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
+        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "AwsGovcloudServerlessAppStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource",
+        "aws:asset:path": "asset.6ddcf10002539818a9256eff3fb2b22aa09298d8f946e26ba121c175a600c44e",
+        "aws:asset:is-bundled": false,
+        "aws:asset:property": "Code"
+      }
+    },
+    "helloWorldFunctionServiceRole8475DBF0": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      },
+      "DependsOn": [
+        "DeployCodeAwsCliLayerB38BC350",
+        "DeployCodeCustomResource46A14DA0"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "AwsGovcloudServerlessAppStack/helloWorldFunction/ServiceRole/Resource"
+      }
+    },
+    "helloWorldFunctionServiceRoleDefaultPolicy5F20A9E0": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:BatchWriteItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "items07D08F4B",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Ref": "AWS::NoValue"
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "helloWorldFunctionServiceRoleDefaultPolicy5F20A9E0",
+        "Roles": [
+          {
+            "Ref": "helloWorldFunctionServiceRole8475DBF0"
+          }
+        ]
+      },
+      "DependsOn": [
+        "DeployCodeAwsCliLayerB38BC350",
+        "DeployCodeCustomResource46A14DA0"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "AwsGovcloudServerlessAppStack/helloWorldFunction/ServiceRole/DefaultPolicy/Resource"
+      }
+    },
+    "helloWorldFunction00C940B5": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "CodeBucketFF4C7AD6"
+          },
+          "S3Key": "helloworld.py.zip"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "helloWorldFunctionServiceRole8475DBF0",
+            "Arn"
+          ]
+        },
+        "Handler": "helloworld.handler",
+        "Runtime": "python3.8"
+      },
+      "DependsOn": [
+        "DeployCodeAwsCliLayerB38BC350",
+        "DeployCodeCustomResource46A14DA0",
+        "helloWorldFunctionServiceRoleDefaultPolicy5F20A9E0",
+        "helloWorldFunctionServiceRole8475DBF0"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "AwsGovcloudServerlessAppStack/helloWorldFunction/Resource"
+      }
+    },
+    "userPoolDC9497E0": {
+      "Type": "AWS::Cognito::UserPool",
+      "Properties": {
+        "AccountRecoverySetting": {
+          "RecoveryMechanisms": [
+            {
+              "Name": "verified_phone_number",
+              "Priority": 1
+            },
+            {
+              "Name": "verified_email",
+              "Priority": 2
+            }
+          ]
+        },
+        "AdminCreateUserConfig": {
+          "AllowAdminCreateUserOnly": false
+        },
+        "AutoVerifiedAttributes": [
+          "email"
+        ],
+        "EmailVerificationMessage": "Thanks for signing up to our awesome app! Your verification code is {####}",
+        "EmailVerificationSubject": "Verify your email for our awesome app!",
+        "SmsVerificationMessage": "The verification code to your new account is {####}",
+        "UsernameAttributes": [
+          "email"
+        ],
+        "VerificationMessageTemplate": {
+          "DefaultEmailOption": "CONFIRM_WITH_CODE",
+          "EmailMessage": "Thanks for signing up to our awesome app! Your verification code is {####}",
+          "EmailSubject": "Verify your email for our awesome app!",
+          "SmsMessage": "The verification code to your new account is {####}"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "AwsGovcloudServerlessAppStack/userPool/Resource"
+      }
+    },
+    "gcappclient1F2C8E8A": {
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "UserPoolId": {
+          "Ref": "userPoolDC9497E0"
+        },
+        "AllowedOAuthFlows": [
+          "code"
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthScopes": [
+          "openid",
+          "profile"
+        ],
+        "CallbackURLs": [
+          "https://example.com"
+        ],
+        "ClientName": "HelloWorldApp",
+        "SupportedIdentityProviders": [
+          "COGNITO"
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "AwsGovcloudServerlessAppStack/gc-appclient/Resource"
+      }
+    },
+    "helloWorldLambdaRestApi6825FB98": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "EndpointConfiguration": {
+          "Types": [
+            "REGIONAL"
+          ]
+        },
+        "Name": "Hello World API"
+      },
+      "Metadata": {
+        "aws:cdk:path": "AwsGovcloudServerlessAppStack/helloWorldLambdaRestApi/Resource"
+      }
+    },
+    "helloWorldLambdaRestApiDeploymentCB1FF57460e476160a6a640c8484d435a243d542": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "helloWorldLambdaRestApi6825FB98"
+        },
+        "Description": "Automatically created by the RestApi construct"
+      },
+      "DependsOn": [
+        "helloWorldLambdaRestApihelloOPTIONSDE248490",
+        "helloWorldLambdaRestApihelloPOST770714C9",
+        "helloWorldLambdaRestApihello4EB1ABAC"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "AwsGovcloudServerlessAppStack/helloWorldLambdaRestApi/Deployment/Resource"
+      }
+    },
+    "helloWorldLambdaRestApiDeploymentStageprod67DD79AF": {
+      "Type": "AWS::ApiGateway::Stage",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "helloWorldLambdaRestApi6825FB98"
+        },
+        "DeploymentId": {
+          "Ref": "helloWorldLambdaRestApiDeploymentCB1FF57460e476160a6a640c8484d435a243d542"
+        },
+        "StageName": "prod"
+      },
+      "Metadata": {
+        "aws:cdk:path": "AwsGovcloudServerlessAppStack/helloWorldLambdaRestApi/DeploymentStage.prod/Resource"
+      }
+    },
+    "helloWorldLambdaRestApihello4EB1ABAC": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "helloWorldLambdaRestApi6825FB98",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "hello",
+        "RestApiId": {
+          "Ref": "helloWorldLambdaRestApi6825FB98"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "AwsGovcloudServerlessAppStack/helloWorldLambdaRestApi/Default/hello/Resource"
+      }
+    },
+    "helloWorldLambdaRestApihelloOPTIONSDE248490": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "OPTIONS",
+        "ResourceId": {
+          "Ref": "helloWorldLambdaRestApihello4EB1ABAC"
+        },
+        "RestApiId": {
+          "Ref": "helloWorldLambdaRestApi6825FB98"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationResponses": [
+            {
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Api-Auth-Token'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+              },
+              "StatusCode": "204"
+            }
+          ],
+          "RequestTemplates": {
+            "application/json": "{ statusCode: 200 }"
+          },
+          "Type": "MOCK"
+        },
+        "MethodResponses": [
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Methods": true
+            },
+            "StatusCode": "204"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "AwsGovcloudServerlessAppStack/helloWorldLambdaRestApi/Default/hello/OPTIONS/Resource"
+      }
+    },
+    "helloWorldLambdaRestApihelloPOSTApiPermissionAwsGovcloudServerlessAppStackhelloWorldLambdaRestApi904C177DPOSThello98719809": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "helloWorldFunction00C940B5",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:aws-us-gov:execute-api:us-gov-west-1:897821772212:",
+              {
+                "Ref": "helloWorldLambdaRestApi6825FB98"
+              },
+              "/",
+              {
+                "Ref": "helloWorldLambdaRestApiDeploymentStageprod67DD79AF"
+              },
+              "/POST/hello"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "AwsGovcloudServerlessAppStack/helloWorldLambdaRestApi/Default/hello/POST/ApiPermission.AwsGovcloudServerlessAppStackhelloWorldLambdaRestApi904C177D.POST..hello"
+      }
+    },
+    "helloWorldLambdaRestApihelloPOSTApiPermissionTestAwsGovcloudServerlessAppStackhelloWorldLambdaRestApi904C177DPOSThello67F965C2": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "helloWorldFunction00C940B5",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:aws-us-gov:execute-api:us-gov-west-1:897821772212:",
+              {
+                "Ref": "helloWorldLambdaRestApi6825FB98"
+              },
+              "/test-invoke-stage/POST/hello"
+            ]
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "AwsGovcloudServerlessAppStack/helloWorldLambdaRestApi/Default/hello/POST/ApiPermission.Test.AwsGovcloudServerlessAppStackhelloWorldLambdaRestApi904C177D.POST..hello"
+      }
+    },
+    "helloWorldLambdaRestApihelloPOST770714C9": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "POST",
+        "ResourceId": {
+          "Ref": "helloWorldLambdaRestApihello4EB1ABAC"
+        },
+        "RestApiId": {
+          "Ref": "helloWorldLambdaRestApi6825FB98"
+        },
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Ref": "cfnAuth"
+        },
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:aws-us-gov:apigateway:us-gov-west-1:lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "helloWorldFunction00C940B5",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "AwsGovcloudServerlessAppStack/helloWorldLambdaRestApi/Default/hello/POST/Resource"
+      }
+    },
+    "cfnAuth": {
+      "Type": "AWS::ApiGateway::Authorizer",
+      "Properties": {
+        "Name": "HelloWorldAPIAuthorizer",
+        "RestApiId": {
+          "Ref": "helloWorldLambdaRestApi6825FB98"
+        },
+        "Type": "COGNITO_USER_POOLS",
+        "IdentitySource": "method.request.header.Authorization",
+        "ProviderARNs": [
+          {
+            "Fn::GetAtt": [
+              "userPoolDC9497E0",
+              "Arn"
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "AwsGovcloudServerlessAppStack/cfnAuth"
+      }
+    },
+    "WebACL": {
+      "Type": "AWS::WAFv2::WebACL",
+      "Properties": {
+        "DefaultAction": {
+          "Allow": {}
+        },
+        "Scope": "REGIONAL",
+        "VisibilityConfig": {
+          "CloudWatchMetricsEnabled": true,
+          "MetricName": "webACL",
+          "SampledRequestsEnabled": true
+        },
+        "Rules": [
+          {
+            "Name": "AWS-AWSManagedRulesAmazonIpReputationList",
+            "OverrideAction": {
+              "None": {}
+            },
+            "Priority": 10,
+            "Statement": {
+              "ManagedRuleGroupStatement": {
+                "Name": "AWSManagedRulesAmazonIpReputationList",
+                "VendorName": "AWS"
+              }
+            },
+            "VisibilityConfig": {
+              "CloudWatchMetricsEnabled": true,
+              "MetricName": "AWSManagedRulesAmazonIpReputationList",
+              "SampledRequestsEnabled": true
+            }
+          },
+          {
+            "Name": "AWS-AWSManagedRulesCommonRuleSet",
+            "OverrideAction": {
+              "None": {}
+            },
+            "Priority": 20,
+            "Statement": {
+              "ManagedRuleGroupStatement": {
+                "ExcludedRules": [
+                  {
+                    "Name": "GenericRFI_BODY"
+                  },
+                  {
+                    "Name": "SizeRestrictions_BODY"
+                  }
+                ],
+                "Name": "AWSManagedRulesCommonRuleSet",
+                "VendorName": "AWS"
+              }
+            },
+            "VisibilityConfig": {
+              "CloudWatchMetricsEnabled": true,
+              "MetricName": "AWS-AWSManagedRulesCommonRuleSet",
+              "SampledRequestsEnabled": true
+            }
+          },
+          {
+            "Name": "AWSManagedRulesSQLiRuleSet",
+            "OverrideAction": {
+              "None": {}
+            },
+            "Priority": 30,
+            "Statement": {
+              "ManagedRuleGroupStatement": {
+                "ExcludedRules": [],
+                "Name": "AWSManagedRulesSQLiRuleSet",
+                "VendorName": "AWS"
+              }
+            },
+            "VisibilityConfig": {
+              "CloudWatchMetricsEnabled": true,
+              "MetricName": "AWSManagedRulesSQLiRuleSet",
+              "SampledRequestsEnabled": true
+            }
+          },
+          {
+            "Name": "AWSManagedRulePHP",
+            "OverrideAction": {
+              "None": {}
+            },
+            "Priority": 40,
+            "Statement": {
+              "ManagedRuleGroupStatement": {
+                "ExcludedRules": [],
+                "Name": "AWSManagedRulesPHPRuleSet",
+                "VendorName": "AWS"
+              }
+            },
+            "VisibilityConfig": {
+              "CloudWatchMetricsEnabled": true,
+              "MetricName": "AWSManagedRulePHP",
+              "SampledRequestsEnabled": true
+            }
+          },
+          {
+            "Name": "AWSManagedRuleLinux",
+            "OverrideAction": {
+              "None": {}
+            },
+            "Priority": 50,
+            "Statement": {
+              "ManagedRuleGroupStatement": {
+                "ExcludedRules": [],
+                "Name": "AWSManagedRulesLinuxRuleSet",
+                "VendorName": "AWS"
+              }
+            },
+            "VisibilityConfig": {
+              "CloudWatchMetricsEnabled": true,
+              "MetricName": "AWSManagedRuleLinux",
+              "SampledRequestsEnabled": true
+            }
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "AwsGovcloudServerlessAppStack/WebACL"
+      }
+    },
+    "WebACLAssociation": {
+      "Type": "AWS::WAFv2::WebACLAssociation",
+      "Properties": {
+        "ResourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:aws-us-gov:apigateway:us-gov-west-1::/restapis/",
+              {
+                "Ref": "helloWorldLambdaRestApi6825FB98"
+              },
+              "/stages/",
+              {
+                "Ref": "helloWorldLambdaRestApiDeploymentStageprod67DD79AF"
+              }
+            ]
+          ]
+        },
+        "WebACLArn": {
+          "Fn::GetAtt": [
+            "WebACL",
+            "Arn"
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "AwsGovcloudServerlessAppStack/WebACLAssociation"
+      }
+    },
+    "WebsiteBucket75C24D94": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        },
+        "BucketName": {
+          "Ref": "WebsiteBucketName"
+        },
+        "Tags": [
+          {
+            "Key": "aws-cdk:cr-owned:e4678c9b",
+            "Value": "true"
+          }
+        ],
+        "WebsiteConfiguration": {
+          "IndexDocument": "index.html"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "AwsGovcloudServerlessAppStack/WebsiteBucket/Resource"
+      }
+    },
+    "WebsiteBucketPolicyE10E3262": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "WebsiteBucket75C24D94"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "WebsiteBucket75C24D94",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "WebsiteBucket75C24D94",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "WebsiteBucket75C24D94",
+                        "Arn"
+                      ]
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "AwsGovcloudServerlessAppStack/WebsiteBucket/Policy/Resource"
+      }
+    },
+    "DeployWebsiteAwsCliLayer17DBC421": {
+      "Type": "AWS::Lambda::LayerVersion",
+      "Properties": {
+        "Content": {
+          "S3Bucket": "cdk-hnb659fds-assets-897821772212-us-gov-west-1",
+          "S3Key": "c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip"
+        },
+        "Description": "/opt/awscli/aws"
+      },
+      "Metadata": {
+        "aws:cdk:path": "AwsGovcloudServerlessAppStack/DeployWebsite/AwsCliLayer/Resource",
+        "aws:asset:path": "asset.c409e6c5845f1f349df8cd84e160bf6f1c35d2b060b63e1f032f9bd39d4542cc.zip",
+        "aws:asset:is-bundled": false,
+        "aws:asset:property": "Content"
+      }
+    },
+    "DeployWebsiteCustomResourceD116527B": {
+      "Type": "Custom::CDKBucketDeployment",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
+            "Arn"
+          ]
+        },
+        "SourceBucketNames": [
+          "cdk-hnb659fds-assets-897821772212-us-gov-west-1"
+        ],
+        "SourceObjectKeys": [
+          "4f5b6c32cbac0af3f8ff67a20d7c20acfa4bbbc627f8aee46bd088dfc8f2e388.zip"
+        ],
+        "DestinationBucketName": {
+          "Ref": "WebsiteBucket75C24D94"
+        },
+        "Prune": true
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "AwsGovcloudServerlessAppStack/DeployWebsite/CustomResource/Default"
+      }
+    },
+    "BucketPolicy2FEEDA99": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "WebsiteBucket75C24D94"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject",
+                "s3:GetObjectVersion"
+              ],
+              "Condition": {
+                "StringNotEquals": {
+                  "aws:Referer": "referertest"
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "WebsiteBucket75C24D94",
+                        "Arn"
+                      ]
+                    },
+                    "/*}"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "AwsGovcloudServerlessAppStack/Bucket-Policy/Resource"
+      }
+    }
+  },
+  "Parameters": {
+    "CodeBucketName": {
+      "Type": "String",
+      "Default": "codebucket-897821772212-us-gov-west-1",
+      "Description": "The name of the Amazon S3 bucket where the uploaded code. Default is codebucket-<cdk-default-account>-<cdk-default-region>"
+    },
+    "WebsiteBucketName": {
+      "Type": "String",
+      "Default": "websitebucket-897821772212-us-gov-west-1",
+      "Description": "The name of the Amazon S3 bucket where the uploaded code. Default is websitebucket-<cdk-default-account>-<cdk-default-region>"
+    }
+  },
+  "Outputs": {
+    "helloWorldLambdaRestApiEndpointC5601FAC": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "helloWorldLambdaRestApi6825FB98"
+            },
+            ".execute-api.us-gov-west-1.",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/",
+            {
+              "Ref": "helloWorldLambdaRestApiDeploymentStageprod67DD79AF"
+            },
+            "/"
+          ]
+        ]
+      }
+    },
+    "userPoolId": {
+      "Description": "The Cognito User Pool Id",
+      "Value": {
+        "Ref": "userPoolDC9497E0"
+      },
+      "Export": {
+        "Name": "userPoolId"
+      }
+    },
+    "appClientId": {
+      "Description": "The Cognito User Pool App Client Id",
+      "Value": {
+        "Ref": "gcappclient1F2C8E8A"
+      },
+      "Export": {
+        "Name": "userPoolAppClientId"
+      }
+    },
+    "apigwendpointurl": {
+      "Description": "The API Gateway endpoint url",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "helloWorldLambdaRestApi6825FB98"
+            },
+            ".execute-api.us-gov-west-1.",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/",
+            {
+              "Ref": "helloWorldLambdaRestApiDeploymentStageprod67DD79AF"
+            },
+            "/"
+          ]
+        ]
+      },
+      "Export": {
+        "Name": "apigw-endpoint-url"
+      }
+    }
+  }
+}
