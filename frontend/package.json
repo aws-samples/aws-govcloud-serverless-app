@@ -9,7 +9,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "amazon-cognito-identity-js": "^5.2.11",
-    "aws-sdk": "^2.1235.0",
+    "aws-sdk": "^2.1354.0",
     "fetch": "^1.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
